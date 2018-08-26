@@ -136,7 +136,6 @@ class Ball:
 # The game itself #
 ###################
 
-
 class Pong:
     """The class that sets up and runs the game."""
 
@@ -183,7 +182,6 @@ class Pong:
             initial_velocity=BALL_X_VELOCITY,
         )
 
-        self.death = False
         self.music.start_music()
 
     ##############
@@ -221,20 +219,6 @@ class Pong:
                 )
                 self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
 
-    def check_death(self):
-        """Check whether the snake has died (out of bounds or doubled up.)"""
-
-        head = self.snake[0]
-        if head.x < 0 or head.y <= HEIGHT_SCORE or head.x >= WIDTH or head.y >= HEIGHT:
-            self.death_event()
-        elif len(self.snake) != len(set(self.snake)):
-            self.death_event()
-
-    def death_event(self):
-        """Kill the game (bring up end screen)."""
-        self.music.sfx_death()
-        self.music.stop_music()
-        self.death = True  # Check having run into self
 
     ##############
     # Draw logic #
@@ -243,16 +227,11 @@ class Pong:
     def draw(self):
         """Draw the background, snake, score, and apple OR the end screen."""
         pyxel.cls(COL_BACKGROUND)
-        self.draw_paddles()
-        self.draw_ball()
-        # self.draw_score()
-
-    def draw_paddles(self):
         self.l_paddle.display()
         self.r_paddle.display()
-
-    def draw_ball(self):
         self.ball.display()
+        # self.draw_score()
+
 
     def draw_score(self):
         """Draw the score at the top."""
