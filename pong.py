@@ -57,7 +57,7 @@ BALL_SIDE = 2
 class Paddle:
     """Class for the paddles.
 
-    Movement control and display."""
+    Controls the movement and display of the paddles."""
 
     def __init__(self, coordinates, colour, width, height, control_up, control_down):
         """Set up key paddle variables."""
@@ -90,6 +90,14 @@ class Paddle:
             y2=self.y + self.height - 1,
             col=self.colour,
         )
+
+
+class Ball:
+    """Class for the ball.
+
+    Moves and displays the ball."""
+    pass
+
 
 
 
@@ -135,8 +143,6 @@ class Pong:
             control_up=pyxel.KEY_UP,
             control_down=pyxel.KEY_DOWN,
         )
-
-        self.paddles = (self.l_paddle, self.r_paddle)
 
         self.ball = Point(WIDTH // 2, HEIGHT // 2)
         self.ball_velocity = Point(BALL_X_VELOCITY, BALL_X_VELOCITY)
