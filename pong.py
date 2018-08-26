@@ -32,13 +32,10 @@ Point = namedtuple("Point", ["x", "y"])  # Convenience class for coordinates
 COL_BACKGROUND = 5
 COL_PADDLE = 6
 COL_BALL = 9
+COL_SCORE = 13
 
 WIDTH = 80
 HEIGHT = 50
-
-HEIGHT_SCORE = FONT_HEIGHT = pyxel.constants.FONT_HEIGHT
-COL_SCORE = 6
-COL_SCORE_BACKGROUND = 5
 
 PADDLE_HEIGHT = 10
 PADDLE_WIDTH = 2
@@ -51,6 +48,7 @@ BALL_SIDE = 2
 ####################
 # Helper functions #
 ####################
+
 
 def is_overlap(object1, object2):
     """Detects overlap between two rectangles.
@@ -153,7 +151,6 @@ class Ball:
             self.y = 2 * HEIGHT - self.y - 2 * self.height
             self.y_vol = -self.y_vol
 
-
     def check_collision(self, paddles):
         """Check if the ball is hitting a paddle and react accordingly."""
         for paddle in paddles:
@@ -169,7 +166,6 @@ class Ball:
                 self.x = paddle.x + paddle.width
             else:
                 self.x = paddle.x - self.width
-
 
     def display(self):
         """Display the ball."""
@@ -244,7 +240,10 @@ class Pong:
 
         self.l_paddle.update()
         self.r_paddle.update()
-        self.ball.update()
+        outcome = self.ball.update()
+        if outcome:
+            self.score(outcome)
+
         self.ball.check_collision([self.l_paddle, self.r_paddle])
 
         if pyxel.btn(pyxel.KEY_Q):
@@ -252,6 +251,13 @@ class Pong:
 
         if pyxel.btnp(pyxel.KEY_R):
             self.reset()
+
+    def score(self, outcome):
+        self.music.sfx_score()
+        if outcome == "l":
+            self.l_score += 1
+        elif outcome == "r":
+            self.r_score += 1
 
     ##############
     # Draw logic #
@@ -263,14 +269,19 @@ class Pong:
         self.l_paddle.display()
         self.r_paddle.display()
         self.ball.display()
-        # self.draw_score()
+        self.draw_score()
 
     def draw_score(self):
         """Draw the score at the top."""
 
-        score = "{:04}".format(self.score)
-        pyxel.rect(0, 0, WIDTH, HEIGHT_SCORE, COL_SCORE_BACKGROUND)
-        pyxel.text(1, 1, score, COL_SCORE)
+        l_score = "{:03}".format(self.l_score)
+        r_score = "{:03}".format(self.r_score)
+
+        buffer = PADDLE_SIDE + PADDLE_WIDTH + 2
+        r_x_position = WIDTH - pyxel.constants.FONT_WIDTH * 3 - buffer
+
+        pyxel.text(x=buffer, y=2, s=l_score, col=COL_SCORE)
+        pyxel.text(x=r_x_position, y=2, s=r_score, col=COL_SCORE)
 
     @staticmethod
     def center_text(text, page_width, char_width=pyxel.constants.FONT_WIDTH):
@@ -354,7 +365,7 @@ class Music:
             speed=20,
         )
 
-    def sfx_apple(self):
+    def sfx_score(self):
         """Play apple collection sound."""
         pyxel.play(ch=0, snd=0)
 
