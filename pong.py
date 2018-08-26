@@ -141,20 +141,16 @@ class Ball:
         self.x += self.x_vol
         self.y += self.y_vol
 
-        ### This needs to be replaced with scoring code ###
         if self.x < 0:
-            self.x = -self.x
-            self.x_vol = -self.x_vol
+            return "l"
         elif self.x + self.width > WIDTH:
-            self.x = 2 * WIDTH - self.x - self.width
-            self.x_vol = -self.x_vol
-        ###################################################
+            return "r"
 
         if self.y < 0:
             self.y = -self.y
             self.y_vol = -self.y_vol
         elif self.y + self.height > HEIGHT:
-            self.y = 2 * HEIGHT - self.y - self.height
+            self.y = 2 * HEIGHT - self.y - 2 * self.height
             self.y_vol = -self.y_vol
 
 
@@ -197,7 +193,7 @@ class Pong:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=20)
+        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=50)
         self.music = Music()
         self.reset()
         pyxel.run(self.update, self.draw)
