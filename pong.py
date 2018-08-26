@@ -52,6 +52,9 @@ WIN_CONDITION = 7
 TEXT_FINISH = ["The winner is:", "", "(Q)UIT", "(R)ESTART"]
 HEIGHT_FINISH = 6
 
+SPEED_PERIOD = 100
+SPEED_AMOUNT = 0.1
+
 ####################
 # Helper functions #
 ####################
@@ -83,6 +86,10 @@ def is_overlap(object1, object2):
         return False
     return True
 
+
+def sign(number):
+    """Return the sign of a number."""
+    return 1 if number >= 0 else -1
 
 #######################
 # Classes definitions #
@@ -236,6 +243,7 @@ class Pong:
     def reset_after_score(self):
         """Reset paddles and ball."""
         self.start = pyxel.frame_count + 50
+        self.speed_up = self.start + SPEED_PERIOD
 
         self.ball = Ball(
             coordinates=(WIDTH // 2, HEIGHT // 2),
@@ -258,7 +266,7 @@ class Pong:
             outcome = self.ball.update()
             if outcome:
                 self.score(outcome)
-
+            self.check_speed()
             self.ball.check_collision([self.l_paddle, self.r_paddle])
 
         if pyxel.btn(pyxel.KEY_Q):
@@ -266,6 +274,13 @@ class Pong:
 
         if pyxel.btnp(pyxel.KEY_R):
             self.reset_game()
+
+    def check_speed(self):
+        if pyxel.frame_count > self.speed_up:
+            self.speed_up += SPEED_PERIOD
+            self.ball.x_vol += SPEED_AMOUNT * sign(self.ball.x_vol)
+            self.ball.y_vol += SPEED_AMOUNT * sign(self.ball.y_vol)
+            print("speedup", self.ball.x_vol)
 
     def score(self, outcome):
         self.music.sfx_score()
