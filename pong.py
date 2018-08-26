@@ -15,7 +15,8 @@ Todo:
 - [ ] Make smoother
 - [x] Add scoring
 - [x] Add scores
-- [ ] Add finish screen
+- [x] Add finish screen
+- [ ] Add different rebounds
 
 Created by Marcus Croucher in 2018.
 """
