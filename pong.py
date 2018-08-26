@@ -191,14 +191,17 @@ class Pong:
 
         pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=50)
         self.music = Music()
-        self.reset()
+        self.music.start_music()
+        self.reset_game()
         pyxel.run(self.update, self.draw)
 
-    def reset(self):
-        """Initiate key variables (direction, snake, apple, score, etc.)"""
+
+    def reset_game(self):
+        """Reset score and position."""
 
         self.l_score = 0
         self.r_score = 0
+        self.reset_after_score()
 
         self.l_paddle = Paddle(
             coordinates=(PADDLE_SIDE, (HEIGHT - PADDLE_HEIGHT) // 2),
@@ -221,6 +224,11 @@ class Pong:
             control_down=pyxel.KEY_DOWN,
         )
 
+
+    def reset_after_score(self):
+        """Reset paddles and ball."""
+        self.start = pyxel.frame_count + 50
+
         self.ball = Ball(
             coordinates=(WIDTH // 2, HEIGHT // 2),
             colour=COL_BALL,
@@ -229,8 +237,6 @@ class Pong:
             initial_velocity=BALL_X_VELOCITY,
         )
 
-        self.music.start_music()
-
     ##############
     # Game logic #
     ##############
@@ -238,13 +244,14 @@ class Pong:
     def update(self):
         """Update logic of game. Updates the snake and checks for scoring/win condition."""
 
-        self.l_paddle.update()
-        self.r_paddle.update()
-        outcome = self.ball.update()
-        if outcome:
-            self.score(outcome)
+        if pyxel.frame_count > self.start:
+            self.l_paddle.update()
+            self.r_paddle.update()
+            outcome = self.ball.update()
+            if outcome:
+                self.score(outcome)
 
-        self.ball.check_collision([self.l_paddle, self.r_paddle])
+            self.ball.check_collision([self.l_paddle, self.r_paddle])
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
@@ -258,6 +265,8 @@ class Pong:
             self.l_score += 1
         elif outcome == "r":
             self.r_score += 1
+
+        self.reset_after_score()
 
     ##############
     # Draw logic #
@@ -274,11 +283,11 @@ class Pong:
     def draw_score(self):
         """Draw the score at the top."""
 
-        l_score = "{:03}".format(self.l_score)
-        r_score = "{:03}".format(self.r_score)
+        l_score = "{:01}".format(self.l_score)
+        r_score = "{:01}".format(self.r_score)
 
         buffer = PADDLE_SIDE + PADDLE_WIDTH + 2
-        r_x_position = WIDTH - pyxel.constants.FONT_WIDTH * 3 - buffer
+        r_x_position = WIDTH - pyxel.constants.FONT_WIDTH - buffer
 
         pyxel.text(x=buffer, y=2, s=l_score, col=COL_SCORE)
         pyxel.text(x=r_x_position, y=2, s=r_score, col=COL_SCORE)
