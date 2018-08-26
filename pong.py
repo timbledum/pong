@@ -48,6 +48,35 @@ PADDLE_MOVE_SPEED = 1
 BALL_X_VELOCITY = 0.5
 BALL_SIDE = 2
 
+####################
+# Helper functions #
+####################
+
+def is_overlap(object1, object2):
+    """Detects overlap between two rectangles.
+
+    Taking two objects, detects whether they overlap.
+    Assumes the presence of the following attributes:
+    - x
+    - y
+    - width
+    - height
+    
+    Tests whether the rectangles are above/below each other, or
+    left/right of each other, and if not, they are overlapping.
+
+    This is greedy - includes collisions where the rectangles are only just touching.
+    """
+
+    if object1.x + object1.width < object2.x:
+        return False
+    if object2.x + object2.width < object1.x:
+        return False
+    if object1.y + object1.height < object2.y:
+        return False
+    if object2.y + object2.height < object1.y:
+        return False
+    return True
 
 #######################
 # Classes definitions #
@@ -130,21 +159,10 @@ class Ball:
 
     def check_collision(self, paddles):
         """Check if the ball is hitting a paddle and react accordingly."""
+        for paddle in paddles:
+            if is_overlap(self, paddle):
+                self.x_vol = -self.x_vol
 
-        if self.ball.x < (PADDLE_SIDE + PADDLE_WIDTH):
-            if self.l_paddle.y < self.ball.y < self.l_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(
-                    2 * (PADDLE_SIDE + PADDLE_WIDTH) - self.ball.x, self.ball.y
-                )
-                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
-        if self.ball.x + BALL_SIDE > (WIDTH - PADDLE_SIDE - PADDLE_WIDTH):
-            if self.r_paddle.y < self.ball.y < self.r_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(
-                    2 * (WIDTH - PADDLE_SIDE - PADDLE_WIDTH)
-                    - (self.ball.x + BALL_SIDE),
-                    self.ball.y,
-                )
-                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
 
     def display(self):
         """Display the ball."""
@@ -217,11 +235,10 @@ class Pong:
     def update(self):
         """Update logic of game. Updates the snake and checks for scoring/win condition."""
 
-        if not self.death:
-            self.l_paddle.update()
-            self.r_paddle.update()
-            self.ball.update()
-            self.ball.check_collision([l_paddle, r_paddle])
+        self.l_paddle.update()
+        self.r_paddle.update()
+        self.ball.update()
+        self.ball.check_collision([self.l_paddle, self.r_paddle])
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
