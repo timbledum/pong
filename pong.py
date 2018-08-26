@@ -11,10 +11,11 @@ Todo:
 - [ ] Fix collision detection
 - [ ] Replace namedtuple with classes
 - [ ] Replace music
-- [ ] Change colour palette
+- [x] Change colour palette
 - [ ] Make smoother
-- [ ] ???
-- [ ] Profit
+- [ ] Add scoring
+- [ ] Add scores
+- [ ] Add finish screen
 
 Created by Marcus Croucher in 2018.
 """
@@ -28,14 +29,9 @@ Point = namedtuple("Point", ["x", "y"])  # Convenience class for coordinates
 # Constants #
 #############
 
-COL_BACKGROUND = 3
-COL_PADDLE = 11
-COL_DEATH = 8
-COL_BALL = 8
-
-TEXT_DEATH = ["GAME OVER", "(Q)UIT", "(R)ESTART"]
-COL_TEXT_DEATH = 0
-HEIGHT_DEATH = 5
+COL_BACKGROUND = 5
+COL_PADDLE = 6
+COL_BALL = 9
 
 WIDTH = 80
 HEIGHT = 50
