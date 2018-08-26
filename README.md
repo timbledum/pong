@@ -18,10 +18,7 @@ Features:
 
 ### Installation ###
 
-Install Python
-
-Install [Pyxel](https://github.com/kitao/pyxel) using their instructions
-
-Clone or copy this repository
-
-`python3 pong.py` at the command line.
+1. Install [Python](https://www.python.org)
+2. Install [Pyxel](https://github.com/kitao/pyxel) using their instructions
+3. Clone or copy this repository
+4. `python3 pong.py` at the command line.
