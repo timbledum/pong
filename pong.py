@@ -162,9 +162,9 @@ class Ball:
         self.y += self.y_vol
 
         if self.x < 0:
-            return "r"
+            return "r"  # Hit left side so right scores
         elif self.x + self.width > WIDTH:
-            return "l"
+            return "l"  # Hit right side so left scores
 
         if self.y < 0:
             self.y = -self.y
@@ -194,10 +194,12 @@ class Ball:
         return False
 
     def spin_ball(self, paddle):
+        """Adds or substracts y velocity based on where the ball hit the paddle."""
 
         paddle_centre = PADDLE_HEIGHT / 2
+        ball_centre = self.y + self.height / 2
 
-        hit_position = self.y - paddle.y
+        hit_position = ball_centre - paddle.y
         hit_position_normalised = (hit_position - paddle_centre) / paddle_centre
         spin = hit_position_normalised * SPIN
 
@@ -279,7 +281,7 @@ class Pong:
     ##############
 
     def update(self):
-        """Update logic of game. Updates the snake and checks for scoring/win condition."""
+        """Update logic of game. Updates the paddles, ball, and checks for scoring/win condition."""
 
         if pyxel.frame_count > self.start and not self.finish:
             self.l_paddle.update()
@@ -298,12 +300,16 @@ class Pong:
             self.reset_game()
 
     def check_speed(self):
+        """Adds velocity to the ball periodically."""
+
         if pyxel.frame_count > self.speed_up:
             self.speed_up += SPEED_PERIOD
             self.ball.x_vol += SPEED_AMOUNT * sign(self.ball.x_vol)
             self.ball.y_vol += SPEED_AMOUNT * sign(self.ball.y_vol)
 
     def score(self, outcome):
+        """Adds to the score if the ball hits the side. Check win condition."""
+
         self.music.sfx_score()
         if outcome == "l":
             self.l_score += 1
@@ -316,6 +322,8 @@ class Pong:
         self.reset_after_score()
 
     def win_event(self):
+        """What happens when someone wins the game!"""
+
         self.finish = True
         self.music.stop_music()
         self.music.sfx_finish()
@@ -326,6 +334,7 @@ class Pong:
 
     def draw(self):
         """Draw the paddles and ball OR the end screen."""
+
         if self.finish:
             self.draw_end_screen()
         else:
@@ -348,6 +357,8 @@ class Pong:
         pyxel.text(x=r_x_position, y=2, s=r_score, col=COL_SCORE)
 
     def draw_end_screen(self):
+        """Draw the final screen with the winner!"""
+
         pyxel.cls(col=COL_FINISH)
 
         display_text = TEXT_FINISH[:]
@@ -397,20 +408,20 @@ class Music:
         )
 
     def sfx_score(self):
-        """Play apple collection sound."""
+        """Play scoring sound."""
         pyxel.play(ch=0, snd=0)
 
     def sfx_finish(self):
-        """Play death collection sound."""
+        """Play finish sound."""
         pyxel.play(ch=0, snd=1)
 
     def sfx_hit(self):
-        """Play death collection sound."""
+        """Play sound for when ball hits paddle."""
         pyxel.play(ch=0, snd=2)
 
     def start_music(self):
         """Start all music tracks (channels 1 - 3)."""
-        pass
+        pass  # To be implemented
 
     def stop_music(self):
         """Stop all music tracks (channels 1 - 3)."""
