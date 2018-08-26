@@ -21,10 +21,8 @@ Todo:
 Created by Marcus Croucher in 2018.
 """
 
-from collections import namedtuple
+from random import choice
 import pyxel
-
-Point = namedtuple("Point", ["x", "y"])  # Convenience class for coordinates
 
 #############
 # Constants #
@@ -92,6 +90,11 @@ def sign(number):
     """Return the sign of a number."""
     return 1 if number >= 0 else -1
 
+def random_direction():
+    """Return a random direction as 1 or -1."""
+    return choice((-1, 1))
+
+
 #######################
 # Classes definitions #
 #######################
@@ -144,7 +147,8 @@ class Ball:
         """Set up initial variables."""
         self.x = coordinates[0]
         self.y = coordinates[1]
-        self.x_vol = self.y_vol = initial_velocity
+        self.x_vol = initial_velocity * random_direction()
+        self.y_vol = initial_velocity * random_direction()
         self.colour = colour
         self.width = width
         self.height = height
