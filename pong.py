@@ -12,11 +12,11 @@ Todo:
 - [x] Replace namedtuple with classes
 - [ ] Replace music
 - [x] Change colour palette
-- [ ] Make smoother
+- [x] Make smoother
 - [x] Add scoring
 - [x] Add scores
 - [x] Add finish screen
-- [ ] Add different rebounds
+- [x] Add different rebounds
 
 Created by Marcus Croucher in 2018.
 """
