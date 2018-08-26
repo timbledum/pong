@@ -46,13 +46,15 @@ PADDLE_MOVE_SPEED = 1
 BALL_X_VELOCITY = 0.5
 BALL_SIDE = 2
 
-WIN_CONDITION = 7
+WIN_CONDITION = 5
 
 TEXT_FINISH = ["The winner is:", "", "(Q)UIT", "(R)ESTART"]
 HEIGHT_FINISH = 6
 
-SPEED_PERIOD = 100
-SPEED_AMOUNT = 0.1
+SPEED_PERIOD = 200
+SPEED_AMOUNT = 0.05
+
+SPIN = 0.3
 
 ####################
 # Helper functions #
@@ -89,6 +91,7 @@ def is_overlap(object1, object2):
 def sign(number):
     """Return the sign of a number."""
     return 1 if number >= 0 else -1
+
 
 def random_direction():
     """Return a random direction as 1 or -1."""
@@ -176,6 +179,8 @@ class Ball:
             if not is_overlap(self, paddle):
                 continue
 
+            self.spin_ball(paddle)
+
             self.x_vol = -self.x_vol
 
             ball_center = self.x + self.width / 2
@@ -185,6 +190,18 @@ class Ball:
                 self.x = paddle.x + paddle.width
             else:
                 self.x = paddle.x - self.width
+            return True
+        return False
+
+    def spin_ball(self, paddle):
+
+        paddle_centre = PADDLE_HEIGHT / 2
+
+        hit_position = self.y - paddle.y
+        hit_position_normalised = (hit_position - paddle_centre) / paddle_centre
+        spin = hit_position_normalised * SPIN
+
+        self.y_vol += spin
 
     def display(self):
         """Display the ball."""
@@ -213,7 +230,6 @@ class Pong:
         self.music.start_music()
         self.reset_game()
         pyxel.run(self.update, self.draw)
-
 
     def reset_game(self):
         """Reset score and position."""
@@ -244,7 +260,6 @@ class Pong:
             control_down=pyxel.KEY_DOWN,
         )
 
-
     def reset_after_score(self):
         """Reset paddles and ball."""
         self.start = pyxel.frame_count + 50
@@ -272,7 +287,8 @@ class Pong:
             if outcome:
                 self.score(outcome)
             self.check_speed()
-            self.ball.check_collision([self.l_paddle, self.r_paddle])
+            if self.ball.check_collision([self.l_paddle, self.r_paddle]):
+                self.music.sfx_hit()
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
@@ -293,7 +309,7 @@ class Pong:
         elif outcome == "r":
             self.r_score += 1
 
-        if (self.l_score >= WIN_CONDITION or self.r_score >= WIN_CONDITION):
+        if self.l_score >= WIN_CONDITION or self.r_score >= WIN_CONDITION:
             self.win_event()
 
         self.reset_after_score()
@@ -302,8 +318,6 @@ class Pong:
         self.finish = True
         self.music.stop_music()
         self.music.sfx_finish()
-
-
 
     ##############
     # Draw logic #
@@ -318,7 +332,7 @@ class Pong:
             self.l_paddle.display()
             self.r_paddle.display()
             self.ball.display()
-            self.draw_score()   
+            self.draw_score()
 
     def draw_score(self):
         """Draw the score at the top."""
@@ -347,7 +361,6 @@ class Pong:
             text_x = self.center_text(text, WIDTH)
             pyxel.text(text_x, HEIGHT_FINISH + y_offset, text, COL_FINISH_TEXT)
 
-
     @staticmethod
     def center_text(text, page_width, char_width=pyxel.constants.FONT_WIDTH):
         """Helper function for calcuating the start x value for centered text."""
@@ -369,12 +382,17 @@ class Music:
         pyxel.sound(0).set(
             note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
         )
+
         pyxel.sound(1).set(
             note="f3 b2 f2 b1  f1 f1 f1 f1",
             tone="p",
             volume=("4" * 4 + "4321"),
             effect=("n" * 7 + "f"),
             speed=9,
+        )
+
+        pyxel.sound(5).set(
+            note="a3", tone="s", volume="4", effect=("n"), speed=7
         )
 
         melody1 = (
@@ -437,6 +455,10 @@ class Music:
     def sfx_finish(self):
         """Play death collection sound."""
         pyxel.play(ch=0, snd=1)
+
+    def sfx_hit(self):
+        """Play death collection sound."""
+        pyxel.play(ch=0, snd=5)
 
     def start_music(self):
         """Start all music tracks (channels 1 - 3)."""
