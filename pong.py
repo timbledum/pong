@@ -60,6 +60,7 @@ class Paddle:
     Movement control and display."""
 
     def __init__(self, coordinates, colour, width, height, control_up, control_down):
+        """Set up key paddle variables."""
         self.control_up = control_up
         self.control_down = control_down
         self.colour = colour
@@ -69,6 +70,7 @@ class Paddle:
         self.height = height
 
     def detect_input(self):
+        """Move the paddle up and down."""
         if pyxel.btn(self.control_up):
             self.y -= PADDLE_MOVE_SPEED
         elif pyxel.btn(self.control_down):
@@ -80,6 +82,7 @@ class Paddle:
             self.y = HEIGHT - self.height
 
     def display(self):
+        """Display the paddle as a rect."""
         pyxel.rect(
             x1=self.x,
             y1=self.y,
@@ -87,6 +90,7 @@ class Paddle:
             y2=self.y + self.height - 1,
             col=self.colour,
         )
+
 
 
 ###################
