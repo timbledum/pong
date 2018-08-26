@@ -98,6 +98,7 @@ class Ball:
     Moves and displays the ball."""
 
     def __init__(self, coordinates, colour, width, height, initial_velocity):
+        """Set up initial variables."""
         self.x = coordinates[0]
         self.y = coordinates[1]
         self.x_vol = self.y_vol = initial_velocity
@@ -106,15 +107,19 @@ class Ball:
         self.height = height
 
     def update(self):
+        """Update position of ball and check if hitting side of board."""
         self.x += self.x_vol
         self.y += self.y_vol
 
+        ### This needs to be replaced with scoring code ###
         if self.x < 0:
             self.x = -self.x
             self.x_vol = -self.x_vol
         elif self.x + self.width > WIDTH:
             self.x = 2 * WIDTH - self.x - self.width
             self.x_vol = -self.x_vol
+        ###################################################
+
         if self.y < 0:
             self.y = -self.y
             self.y_vol = -self.y_vol
@@ -122,7 +127,27 @@ class Ball:
             self.y = 2 * HEIGHT - self.y - self.height
             self.y_vol = -self.y_vol
 
+
+    def check_collision(self, paddles):
+        """Check if the ball is hitting a paddle and react accordingly."""
+
+        if self.ball.x < (PADDLE_SIDE + PADDLE_WIDTH):
+            if self.l_paddle.y < self.ball.y < self.l_paddle.y + PADDLE_HEIGHT:
+                self.ball = Point(
+                    2 * (PADDLE_SIDE + PADDLE_WIDTH) - self.ball.x, self.ball.y
+                )
+                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
+        if self.ball.x + BALL_SIDE > (WIDTH - PADDLE_SIDE - PADDLE_WIDTH):
+            if self.r_paddle.y < self.ball.y < self.r_paddle.y + PADDLE_HEIGHT:
+                self.ball = Point(
+                    2 * (WIDTH - PADDLE_SIDE - PADDLE_WIDTH)
+                    - (self.ball.x + BALL_SIDE),
+                    self.ball.y,
+                )
+                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
+
     def display(self):
+        """Display the ball."""
         pyxel.rect(
             x1=self.x,
             y1=self.y,
@@ -135,6 +160,7 @@ class Ball:
 ###################
 # The game itself #
 ###################
+
 
 class Pong:
     """The class that sets up and runs the game."""
@@ -193,32 +219,15 @@ class Pong:
 
         if not self.death:
             self.l_paddle.update()
-            self.r_paddle.update()        
+            self.r_paddle.update()
             self.ball.update()
-            self.check_collision()
+            self.ball.check_collision([l_paddle, r_paddle])
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
 
         if pyxel.btnp(pyxel.KEY_R):
             self.reset()
-
-    def check_collision(self):
-        if self.ball.x < (PADDLE_SIDE + PADDLE_WIDTH):
-            if self.l_paddle.y < self.ball.y < self.l_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(
-                    2 * (PADDLE_SIDE + PADDLE_WIDTH) - self.ball.x, self.ball.y
-                )
-                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
-        if self.ball.x + BALL_SIDE > (WIDTH - PADDLE_SIDE - PADDLE_WIDTH):
-            if self.r_paddle.y < self.ball.y < self.r_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(
-                    2 * (WIDTH - PADDLE_SIDE - PADDLE_WIDTH)
-                    - (self.ball.x + BALL_SIDE),
-                    self.ball.y,
-                )
-                self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
-
 
     ##############
     # Draw logic #
@@ -231,7 +240,6 @@ class Pong:
         self.r_paddle.display()
         self.ball.display()
         # self.draw_score()
-
 
     def draw_score(self):
         """Draw the score at the top."""
