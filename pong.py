@@ -43,14 +43,50 @@ COL_SCORE_BACKGROUND = 5
 PADDLE_HEIGHT = 10
 PADDLE_WIDTH = 2
 PADDLE_SIDE = 2
+PADDLE_MOVE_SPEED = 1
 
 BALL_X_VELOCITY = 0.5
 BALL_SIDE = 2
 
-UP = Point(0, -1)
-DOWN = Point(0, 1)
-RIGHT = Point(1, 0)
-LEFT = Point(-1, 0)
+
+#######################
+# Classes definitions #
+#######################
+
+
+class Paddle:
+    """Class for the paddles.
+
+    Movement control and display."""
+
+    def __init__(self, coordinates, colour, width, height, control_up, control_down):
+        self.control_up = control_up
+        self.control_down = control_down
+        self.colour = colour
+        self.x = coordinates[0]
+        self.y = coordinates[1]
+        self.width = width
+        self.height = height
+
+    def detect_input(self):
+        if pyxel.btn(self.control_up):
+            self.y -= PADDLE_MOVE_SPEED
+        elif pyxel.btn(self.control_down):
+            self.y += PADDLE_MOVE_SPEED
+
+        if self.y < 0:
+            self.y = 0
+        elif self.y + self.height > HEIGHT:
+            self.y = HEIGHT - self.height
+
+    def display(self):
+        pyxel.rect(
+            x1=self.x,
+            y1=self.y,
+            x2=self.x + self.width - 1,
+            y2=self.y + self.height - 1,
+            col=self.colour,
+        )
 
 
 ###################
@@ -75,10 +111,29 @@ class Pong:
         self.l_score = 0
         self.r_score = 0
 
-        self.l_paddle = Point(PADDLE_SIDE, (HEIGHT - PADDLE_HEIGHT) // 2)
-        self.r_paddle = Point(
-            WIDTH - PADDLE_SIDE - PADDLE_WIDTH + 1, (HEIGHT - PADDLE_HEIGHT) // 2
+        self.l_paddle = Paddle(
+            coordinates=(PADDLE_SIDE, (HEIGHT - PADDLE_HEIGHT) // 2),
+            colour=COL_PADDLE,
+            width=PADDLE_WIDTH,
+            height=PADDLE_HEIGHT,
+            control_up=pyxel.KEY_W,
+            control_down=pyxel.KEY_S,
         )
+
+        self.r_paddle = Paddle(
+            coordinates=(
+                WIDTH - PADDLE_SIDE - PADDLE_WIDTH,
+                (HEIGHT - PADDLE_HEIGHT) // 2,
+            ),
+            colour=COL_PADDLE,
+            width=PADDLE_WIDTH,
+            height=PADDLE_HEIGHT,
+            control_up=pyxel.KEY_UP,
+            control_down=pyxel.KEY_DOWN,
+        )
+
+        self.paddles = (self.l_paddle, self.r_paddle)
+
         self.ball = Point(WIDTH // 2, HEIGHT // 2)
         self.ball_velocity = Point(BALL_X_VELOCITY, BALL_X_VELOCITY)
 
@@ -105,26 +160,8 @@ class Pong:
 
     def update_paddles(self):
         """Watch the keys and change direction."""
-
-        if pyxel.btn(pyxel.KEY_W):
-            self.l_paddle = Point(self.l_paddle.x + UP.x, self.l_paddle.y + UP.y)
-        elif pyxel.btn(pyxel.KEY_S):
-            self.l_paddle = Point(self.l_paddle.x + DOWN.x, self.l_paddle.y + DOWN.y)
-
-        if self.l_paddle.y < 0:
-            self.l_paddle = Point(self.l_paddle.x, 0)
-        elif self.l_paddle.y + PADDLE_HEIGHT > HEIGHT:
-            self.l_paddle = Point(self.l_paddle.x, HEIGHT - PADDLE_HEIGHT)
-
-        if pyxel.btn(pyxel.KEY_UP):
-            self.r_paddle = Point(self.r_paddle.x + UP.x, self.r_paddle.y + UP.y)
-        elif pyxel.btn(pyxel.KEY_DOWN):
-            self.r_paddle = Point(self.r_paddle.x + DOWN.x, self.r_paddle.y + DOWN.y)
-
-        if self.r_paddle.y < 0:
-            self.r_paddle = Point(self.r_paddle.x, 0)
-        elif self.r_paddle.y + PADDLE_HEIGHT > HEIGHT:
-            self.r_paddle = Point(self.r_paddle.x, HEIGHT - PADDLE_HEIGHT)
+        self.l_paddle.detect_input()
+        self.r_paddle.detect_input()
 
     def update_ball(self):
         self.ball = Point(
@@ -144,17 +181,21 @@ class Pong:
             self.ball = Point(self.ball.x, 2 * HEIGHT - self.ball.y - BALL_SIDE)
             self.ball_velocity = Point(self.ball_velocity.x, -self.ball_velocity.y)
 
-
     def check_collision(self):
         if self.ball.x < (PADDLE_SIDE + PADDLE_WIDTH):
             if self.l_paddle.y < self.ball.y < self.l_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(2 * (PADDLE_SIDE + PADDLE_WIDTH) - self.ball.x, self.ball.y)
+                self.ball = Point(
+                    2 * (PADDLE_SIDE + PADDLE_WIDTH) - self.ball.x, self.ball.y
+                )
                 self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
         if self.ball.x + BALL_SIDE > (WIDTH - PADDLE_SIDE - PADDLE_WIDTH):
             if self.r_paddle.y < self.ball.y < self.r_paddle.y + PADDLE_HEIGHT:
-                self.ball = Point(2 * (WIDTH - PADDLE_SIDE - PADDLE_WIDTH) - (self.ball.x  + BALL_SIDE), self.ball.y)
+                self.ball = Point(
+                    2 * (WIDTH - PADDLE_SIDE - PADDLE_WIDTH)
+                    - (self.ball.x + BALL_SIDE),
+                    self.ball.y,
+                )
                 self.ball_velocity = Point(-self.ball_velocity.x, self.ball_velocity.y)
-
 
     def check_death(self):
         """Check whether the snake has died (out of bounds or doubled up.)"""
@@ -183,25 +224,17 @@ class Pong:
         # self.draw_score()
 
     def draw_paddles(self):
-        for paddle in self.l_paddle, self.r_paddle:
-
-            pyxel.rect(
-                x1=paddle.x,
-                y1=paddle.y,
-                x2=paddle.x + PADDLE_WIDTH - 1,
-                y2=paddle.y + PADDLE_HEIGHT - 1,
-                col=COL_PADDLE,
-            )
-
+        self.l_paddle.display()
+        self.r_paddle.display()
 
     def draw_ball(self):
-            pyxel.rect(
-                x1=self.ball.x,
-                y1=self.ball.y,
-                x2=self.ball.x + BALL_SIDE - 1,
-                y2=self.ball.y + BALL_SIDE - 1,
-                col=COL_BALL,
-            )
+        pyxel.rect(
+            x1=self.ball.x,
+            y1=self.ball.y,
+            x2=self.ball.x + BALL_SIDE - 1,
+            y2=self.ball.y + BALL_SIDE - 1,
+            col=COL_BALL,
+        )
 
     def draw_score(self):
         """Draw the score at the top."""
