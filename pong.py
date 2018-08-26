@@ -8,13 +8,13 @@ Q: Quit the game
 R: Restart the game
 
 Todo:
-- [ ] Fix collision detection
-- [ ] Replace namedtuple with classes
+- [x] Fix collision detection
+- [x] Replace namedtuple with classes
 - [ ] Replace music
 - [x] Change colour palette
 - [ ] Make smoother
-- [ ] Add scoring
-- [ ] Add scores
+- [x] Add scoring
+- [x] Add scores
 - [ ] Add finish screen
 
 Created by Marcus Croucher in 2018.
