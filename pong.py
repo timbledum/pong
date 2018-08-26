@@ -78,6 +78,7 @@ def is_overlap(object1, object2):
         return False
     return True
 
+
 #######################
 # Classes definitions #
 #######################
@@ -160,8 +161,18 @@ class Ball:
     def check_collision(self, paddles):
         """Check if the ball is hitting a paddle and react accordingly."""
         for paddle in paddles:
-            if is_overlap(self, paddle):
-                self.x_vol = -self.x_vol
+            if not is_overlap(self, paddle):
+                continue
+
+            self.x_vol = -self.x_vol
+
+            ball_center = self.x + self.width / 2
+            paddle_center = paddle.x + paddle.width / 2
+
+            if ball_center > paddle_center:
+                self.x = paddle.x + paddle.width
+            else:
+                self.x = paddle.x - self.width
 
 
     def display(self):
@@ -186,7 +197,7 @@ class Pong:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=60)
+        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=20)
         self.music = Music()
         self.reset()
         pyxel.run(self.update, self.draw)
