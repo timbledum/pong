@@ -155,9 +155,9 @@ class Ball:
         self.y += self.y_vol
 
         if self.x < 0:
-            return "l"
-        elif self.x + self.width > WIDTH:
             return "r"
+        elif self.x + self.width > WIDTH:
+            return "l"
 
         if self.y < 0:
             self.y = -self.y
@@ -261,7 +261,7 @@ class Pong:
     def update(self):
         """Update logic of game. Updates the snake and checks for scoring/win condition."""
 
-        if pyxel.frame_count > self.start:
+        if pyxel.frame_count > self.start and not self.finish:
             self.l_paddle.update()
             self.r_paddle.update()
             outcome = self.ball.update()
@@ -281,7 +281,6 @@ class Pong:
             self.speed_up += SPEED_PERIOD
             self.ball.x_vol += SPEED_AMOUNT * sign(self.ball.x_vol)
             self.ball.y_vol += SPEED_AMOUNT * sign(self.ball.y_vol)
-            print("speedup", self.ball.x_vol)
 
     def score(self, outcome):
         self.music.sfx_score()
@@ -297,6 +296,7 @@ class Pong:
 
     def win_event(self):
         self.finish = True
+        self.music.stop_music()
         self.music.sfx_finish()
 
 
