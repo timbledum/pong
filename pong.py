@@ -33,6 +33,8 @@ COL_BACKGROUND = 5
 COL_PADDLE = 6
 COL_BALL = 9
 COL_SCORE = 13
+COL_FINISH = 13
+COL_FINISH_TEXT = 14
 
 WIDTH = 80
 HEIGHT = 50
@@ -44,6 +46,11 @@ PADDLE_MOVE_SPEED = 1
 
 BALL_X_VELOCITY = 0.5
 BALL_SIDE = 2
+
+WIN_CONDITION = 7
+
+TEXT_FINISH = ["The winner is:", "", "(Q)UIT", "(R)ESTART"]
+HEIGHT_FINISH = 6
 
 ####################
 # Helper functions #
@@ -201,6 +208,7 @@ class Pong:
 
         self.l_score = 0
         self.r_score = 0
+        self.finish = False
         self.reset_after_score()
 
         self.l_paddle = Paddle(
@@ -257,7 +265,7 @@ class Pong:
             pyxel.quit()
 
         if pyxel.btnp(pyxel.KEY_R):
-            self.reset()
+            self.reset_game()
 
     def score(self, outcome):
         self.music.sfx_score()
@@ -266,19 +274,31 @@ class Pong:
         elif outcome == "r":
             self.r_score += 1
 
+        if (self.l_score >= WIN_CONDITION or self.r_score >= WIN_CONDITION):
+            self.win_event()
+
         self.reset_after_score()
+
+    def win_event(self):
+        self.finish = True
+        self.music.sfx_finish()
+
+
 
     ##############
     # Draw logic #
     ##############
 
     def draw(self):
-        """Draw the background, snake, score, and apple OR the end screen."""
-        pyxel.cls(COL_BACKGROUND)
-        self.l_paddle.display()
-        self.r_paddle.display()
-        self.ball.display()
-        self.draw_score()
+        """Draw the paddles and ball OR the end screen."""
+        if self.finish:
+            self.draw_end_screen()
+        else:
+            pyxel.cls(COL_BACKGROUND)
+            self.l_paddle.display()
+            self.r_paddle.display()
+            self.ball.display()
+            self.draw_score()   
 
     def draw_score(self):
         """Draw the score at the top."""
@@ -291,6 +311,22 @@ class Pong:
 
         pyxel.text(x=buffer, y=2, s=l_score, col=COL_SCORE)
         pyxel.text(x=r_x_position, y=2, s=r_score, col=COL_SCORE)
+
+    def draw_end_screen(self):
+        pyxel.cls(col=COL_FINISH)
+
+        display_text = TEXT_FINISH[:]
+
+        if self.l_score >= WIN_CONDITION:
+            winner = "The LEFT player!"
+        else:
+            winner = "The RIGHT player!"
+        display_text.insert(1, winner)
+        for i, text in enumerate(display_text):
+            y_offset = (pyxel.constants.FONT_HEIGHT + 2) * i
+            text_x = self.center_text(text, WIDTH)
+            pyxel.text(text_x, HEIGHT_FINISH + y_offset, text, COL_FINISH_TEXT)
+
 
     @staticmethod
     def center_text(text, page_width, char_width=pyxel.constants.FONT_WIDTH):
@@ -378,7 +414,7 @@ class Music:
         """Play apple collection sound."""
         pyxel.play(ch=0, snd=0)
 
-    def sfx_death(self):
+    def sfx_finish(self):
         """Play death collection sound."""
         pyxel.play(ch=0, snd=1)
 
