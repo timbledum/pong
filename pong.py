@@ -51,10 +51,10 @@ WIN_CONDITION = 5
 TEXT_FINISH = ["The winner is:", "", "(Q)UIT", "(R)ESTART"]
 HEIGHT_FINISH = 6
 
-SPEED_PERIOD = 200
-SPEED_AMOUNT = 0.05
+SPEED_PERIOD = 150
+SPEED_AMOUNT = 0.1
 
-SPIN = 0.3
+SPIN = 0.4
 
 ####################
 # Helper functions #
