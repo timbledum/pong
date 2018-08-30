@@ -22,6 +22,7 @@ Created by Marcus Croucher in 2018.
 """
 
 from random import choice
+from particle_emitter import ParticleEmitter
 import pyxel
 
 #############
@@ -43,7 +44,7 @@ PADDLE_WIDTH = 2
 PADDLE_SIDE = 2
 PADDLE_MOVE_SPEED = 1
 
-BALL_X_VELOCITY = 0.5
+BALL_INITIAL_VELOCITY = 0.5
 BALL_SIDE = 2
 
 WIN_CONDITION = 5
@@ -229,6 +230,7 @@ class Pong:
 
         pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=50)
         self.music = Music()
+        self.sparkler_display = False
         self.reset_game()
         pyxel.run(self.update, self.draw)
 
@@ -273,8 +275,9 @@ class Pong:
             colour=COL_BALL,
             width=BALL_SIDE,
             height=BALL_SIDE,
-            initial_velocity=BALL_X_VELOCITY,
+            initial_velocity=BALL_INITIAL_VELOCITY,
         )
+        self.sparkler = ParticleEmitter(self.ball)
 
     ##############
     # Game logic #
@@ -292,12 +295,16 @@ class Pong:
             self.check_speed()
             if self.ball.check_collision([self.l_paddle, self.r_paddle]):
                 self.music.sfx_hit()
+            self.sparkler.sparkle()
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
 
         if pyxel.btnp(pyxel.KEY_R):
             self.reset_game()
+
+        if pyxel.btnp(pyxel.KEY_SPACE):
+            self.sparkler_display = not self.sparkler_display
 
     def check_speed(self):
         """Adds velocity to the ball periodically."""
@@ -339,6 +346,8 @@ class Pong:
             self.draw_end_screen()
         else:
             pyxel.cls(COL_BACKGROUND)
+            if self.sparkler_display:
+                self.sparkler.display()
             self.l_paddle.display()
             self.r_paddle.display()
             self.ball.display()
