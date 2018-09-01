@@ -21,9 +21,10 @@ Todo:
 Created by Marcus Croucher in 2018.
 """
 
-from random import choice
-from particle_emitter import ParticleEmitter
 import pyxel
+from particle_emitter import ParticleEmitter
+from pickups import Pickups
+from utilities import is_overlap, sign, random_direction
 
 #############
 # Constants #
@@ -56,47 +57,6 @@ SPEED_PERIOD = 150
 SPEED_AMOUNT = 0.1
 
 SPIN = 0.4
-
-####################
-# Helper functions #
-####################
-
-
-def is_overlap(object1, object2):
-    """Detects overlap between two rectangles.
-
-    Taking two objects, detects whether they overlap.
-    Assumes the presence of the following attributes:
-    - x
-    - y
-    - width
-    - height
-    
-    Tests whether the rectangles are above/below each other, or
-    left/right of each other, and if not, they are overlapping.
-
-    This is greedy - includes collisions where the rectangles are only just touching.
-    """
-
-    if object1.x + object1.width < object2.x:
-        return False
-    if object2.x + object2.width < object1.x:
-        return False
-    if object1.y + object1.height < object2.y:
-        return False
-    if object2.y + object2.height < object1.y:
-        return False
-    return True
-
-
-def sign(number):
-    """Return the sign of a number."""
-    return 1 if number >= 0 else -1
-
-
-def random_direction():
-    """Return a random direction as 1 or -1."""
-    return choice((-1, 1))
 
 
 #######################
@@ -265,6 +225,9 @@ class Pong:
             control_down=pyxel.KEY_DOWN,
         )
 
+        special_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
+        self.pickups = Pickups(special_side_buffer, WIDTH - special_side_buffer, 0, HEIGHT)
+
     def reset_after_score(self):
         """Reset paddles and ball."""
         self.start = pyxel.frame_count + 50
@@ -277,6 +240,7 @@ class Pong:
             height=BALL_SIDE,
             initial_velocity=BALL_INITIAL_VELOCITY,
         )
+
         self.sparkler = ParticleEmitter(self.ball)
 
     ##############
@@ -295,6 +259,8 @@ class Pong:
             self.check_speed()
             if self.ball.check_collision([self.l_paddle, self.r_paddle]):
                 self.music.sfx_hit()
+            self.pickups.check_pickup()
+            self.pickups.check_collision(self.ball)
             self.sparkler.sparkle()
 
         if pyxel.btn(pyxel.KEY_Q):
@@ -346,10 +312,11 @@ class Pong:
             self.draw_end_screen()
         else:
             pyxel.cls(COL_BACKGROUND)
-            if self.sparkler_display:
+            if "sparkle" in self.pickups.active_conditions:
                 self.sparkler.display()
             self.l_paddle.display()
             self.r_paddle.display()
+            self.pickups.display()
             self.ball.display()
             self.draw_score()
 
