@@ -7,10 +7,10 @@ from utilities import is_overlap
 
 Pickup = namedtuple("Point", "x y width height pickup_type")
 
-PICKUP_TYPES = {"sparkle": 14}
-PICKUP_INTERVAL = (500, 700)
-PICKUP_WIDTH = 2
-PICKUP_LENGTH = 300
+PICKUP_TYPES = {"sparkle": 14, "expand": 12}
+PICKUP_INTERVAL = (500, 900)
+PICKUP_WIDTH = 3
+PICKUP_LENGTH = 400
 
 
 class Pickups:
@@ -34,7 +34,6 @@ class Pickups:
             if pyxel.frame_count > end_frame:
                 del self.active_conditions[condition]
 
-
     def create_pickup(self):
         x = randint(self.left, self.right - PICKUP_WIDTH)
         y = randint(self.top, self.bottom - PICKUP_WIDTH)
@@ -51,6 +50,8 @@ class Pickups:
                 self.active_conditions[pickup.pickup_type] = (
                     pyxel.frame_count + PICKUP_LENGTH
                 )
+                return pickup.pickup_type
+
 
     def display(self):
         for pickup in self.pickups:
