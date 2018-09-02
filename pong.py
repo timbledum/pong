@@ -46,6 +46,8 @@ PADDLE_HEIGHT = 10
 PADDLE_HEIGHT_EXPANDED = 15
 PADDLE_WIDTH = 2
 PADDLE_SIDE = 2
+PADDLE_MOVE_SPEED = 1
+PADDLE_MOVE_SPEED_SLOW = 0.5
 
 
 BALL_INITIAL_VELOCITY = 0.5
@@ -91,6 +93,7 @@ class Pong:
             height=PADDLE_HEIGHT,
             control_up=pyxel.KEY_W,
             control_down=pyxel.KEY_S,
+            move_speed=PADDLE_MOVE_SPEED,
             dimensions=DIMENSIONS,
         )
 
@@ -104,6 +107,7 @@ class Pong:
             height=PADDLE_HEIGHT,
             control_up=pyxel.KEY_UP,
             control_down=pyxel.KEY_DOWN,
+            move_speed=PADDLE_MOVE_SPEED,
             dimensions=DIMENSIONS,
         )
 
@@ -121,8 +125,10 @@ class Pong:
         pickup_types = {
             "sparkle": PickupType(14, self.sparkler.turn_on, self.sparkler.turn_off),
             "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
+            "slow": PickupType(8, self.slow_paddle, self.speed_paddle),
         }
         self.expand_stack = []
+        self.speed_stack = []
         pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
         self.pickups = Pickups(
             pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
@@ -135,7 +141,6 @@ class Pong:
         self.start = pyxel.frame_count + 50
         self.speed_up = self.start + SPEED_PERIOD
         self.ball.reset()
-
 
     ##############
     # Game logic #
@@ -158,7 +163,6 @@ class Pong:
             self.pickups.check_pickup()
             self.pickups.check_collision(self.ball)
 
-
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
 
@@ -178,6 +182,20 @@ class Pong:
         paddle = self.expand_stack.pop(0)
         if paddle not in self.expand_stack:
             paddle.height = PADDLE_HEIGHT
+
+    def slow_paddle(self):
+        if self.ball.x_vol > 0:
+            paddle = self.r_paddle
+        else:
+            paddle = self.l_paddle
+
+        paddle.move_speed = PADDLE_MOVE_SPEED_SLOW
+        self.speed_stack.append(paddle)
+
+    def speed_paddle(self):
+        paddle = self.speed_stack.pop(0)
+        if paddle not in self.speed_stack:
+            paddle.move_speed = PADDLE_MOVE_SPEED
 
     def check_speed(self):
         """Adds velocity to the ball periodically."""

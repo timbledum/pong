@@ -5,7 +5,6 @@ Define the paddle and the ball objects.
 import pyxel
 from utilities import is_overlap, random_direction
 
-PADDLE_MOVE_SPEED = 1
 SPIN = 0.4
 
 
@@ -15,11 +14,20 @@ class Paddle:
     Controls the movement and display of the paddles."""
 
     def __init__(
-        self, coordinates, colour, width, height, control_up, control_down, dimensions
+        self,
+        coordinates,
+        colour,
+        width,
+        height,
+        control_up,
+        control_down,
+        move_speed,
+        dimensions,
     ):
         """Set up key paddle variables."""
         self.control_up = control_up
         self.control_down = control_down
+        self.move_speed = move_speed
         self.colour = colour
         self.x = coordinates[0]
         self.y = coordinates[1]
@@ -30,9 +38,9 @@ class Paddle:
     def update(self):
         """Move the paddle up and down."""
         if pyxel.btn(self.control_up):
-            self.y -= PADDLE_MOVE_SPEED
+            self.y -= self.move_speed
         elif pyxel.btn(self.control_down):
-            self.y += PADDLE_MOVE_SPEED
+            self.y += self.move_speed
 
         if self.y < 0:
             self.y = 0
