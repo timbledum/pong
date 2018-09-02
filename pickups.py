@@ -8,7 +8,7 @@ from utilities import is_overlap
 Pickup = namedtuple("Point", "x y width height pickup_type")
 PickupType = namedtuple("PickupType", "colour enter exit", defaults=[None, None])
 
-PICKUP_TYPES = {"sparkle": PickupType(14), "expand": PickupType(12)}
+
 PICKUP_INTERVAL = (500, 900)
 PICKUP_WIDTH = 3
 PICKUP_LENGTH = 400
@@ -25,20 +25,25 @@ class Pickups:
 
         self.pickup_types = pickup_types
         self.pickups = []
-        self.active_conditions = {}
+        self.active_conditions = []
 
     def check_pickup(self):
         if pyxel.frame_count > self.next_pickup:
             self.create_pickup()
             self.next_pickup = pyxel.frame_count + randint(*PICKUP_INTERVAL)
 
-        for condition, end_frame in list(self.active_conditions.items()):
+        for i, (condition, end_frame) in enumerate(self.active_conditions.copy()):
             if pyxel.frame_count > end_frame:
-                del self.active_conditions[condition]
+                del self.active_conditions[i]
 
                 exit_function = self.pickup_types[condition].exit
                 if exit_function:
                     exit_function()
+
+    def is_condition_active(self, condition):
+        conditions = {c for c, _ in self.active_conditions}
+        return condition in conditions
+
 
     def create_pickup(self):
         x = randint(self.left, self.right - PICKUP_WIDTH)
@@ -53,14 +58,13 @@ class Pickups:
         for i, pickup in enumerate(self.pickups.copy()):
             if is_overlap(pickup, ball):
                 del self.pickups[i]
-                self.active_conditions[pickup.pickup_type] = (
-                    pyxel.frame_count + PICKUP_LENGTH
+                self.active_conditions.append(
+                    (pickup.pickup_type, pyxel.frame_count + PICKUP_LENGTH)
                 )
-    
+
                 enter_function = self.pickup_types[pickup.pickup_type].enter
                 if enter_function:
                     enter_function()
-
 
     def display(self):
         for pickup in self.pickups:

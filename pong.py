@@ -230,6 +230,7 @@ class Pong:
             "sparkle": PickupType(14),
             "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
         }
+        self.expand_stack = []
         pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
         self.pickups = Pickups(
             pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
@@ -287,10 +288,12 @@ class Pong:
             paddle = self.r_paddle
 
         paddle.height = PADDLE_HEIGHT_EXPANDED
+        self.expand_stack.append(paddle)
 
     def contract_paddle(self):
-        self.l_paddle.height = PADDLE_HEIGHT
-        self.r_paddle.height = PADDLE_HEIGHT
+        paddle = self.expand_stack.pop(0)
+        if paddle not in self.expand_stack:
+            paddle.height = PADDLE_HEIGHT
 
     def check_speed(self):
         """Adds velocity to the ball periodically."""
@@ -332,7 +335,7 @@ class Pong:
             self.draw_end_screen()
         else:
             pyxel.cls(COL_BACKGROUND)
-            if "sparkle" in self.pickups.active_conditions:
+            if self.pickups.is_condition_active("sparkle"):
                 self.sparkler.display()
             self.l_paddle.display()
             self.r_paddle.display()
