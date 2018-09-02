@@ -29,7 +29,6 @@ class ParticleEmitter:
             else:
                 pyxel.pix(particle["x"], particle["y"], particle["color"])
 
-
     def turn_on(self):
         """Turn the sparkles on."""
         self.status += 1
