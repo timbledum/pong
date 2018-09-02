@@ -23,8 +23,9 @@ Created by Marcus Croucher in 2018.
 
 import pyxel
 from particle_emitter import ParticleEmitter
+from objects import Paddle, Ball
 from pickups import Pickups, PickupType
-from utilities import is_overlap, sign, random_direction
+from utilities import sign
 
 #############
 # Constants #
@@ -39,12 +40,13 @@ COL_FINISH_TEXT = 14
 
 WIDTH = 80
 HEIGHT = 50
+DIMENSIONS = WIDTH, HEIGHT
 
 PADDLE_HEIGHT = 10
 PADDLE_HEIGHT_EXPANDED = 15
 PADDLE_WIDTH = 2
 PADDLE_SIDE = 2
-PADDLE_MOVE_SPEED = 1
+
 
 BALL_INITIAL_VELOCITY = 0.5
 BALL_SIDE = 2
@@ -56,126 +58,6 @@ HEIGHT_FINISH = 6
 
 SPEED_PERIOD = 150
 SPEED_AMOUNT = 0.1
-
-SPIN = 0.4
-
-
-#######################
-# Classes definitions #
-#######################
-
-
-class Paddle:
-    """Class for the paddles.
-
-    Controls the movement and display of the paddles."""
-
-    def __init__(self, coordinates, colour, width, height, control_up, control_down):
-        """Set up key paddle variables."""
-        self.control_up = control_up
-        self.control_down = control_down
-        self.colour = colour
-        self.x = coordinates[0]
-        self.y = coordinates[1]
-        self.width = width
-        self.height = height
-
-    def update(self):
-        """Move the paddle up and down."""
-        if pyxel.btn(self.control_up):
-            self.y -= PADDLE_MOVE_SPEED
-        elif pyxel.btn(self.control_down):
-            self.y += PADDLE_MOVE_SPEED
-
-        if self.y < 0:
-            self.y = 0
-        elif self.y + self.height > HEIGHT:
-            self.y = HEIGHT - self.height
-
-    def display(self):
-        """Display the paddle as a rect."""
-        pyxel.rect(
-            x1=self.x,
-            y1=self.y,
-            x2=self.x + self.width - 1,
-            y2=self.y + self.height - 1,
-            col=self.colour,
-        )
-
-
-class Ball:
-    """Class for the ball.
-
-    Moves and displays the ball."""
-
-    def __init__(self, coordinates, colour, width, height, initial_velocity):
-        """Set up initial variables."""
-        self.x = coordinates[0]
-        self.y = coordinates[1]
-        self.x_vol = initial_velocity * random_direction()
-        self.y_vol = initial_velocity * random_direction()
-        self.colour = colour
-        self.width = width
-        self.height = height
-
-    def update(self):
-        """Update position of ball and check if hitting side of board."""
-        self.x += self.x_vol
-        self.y += self.y_vol
-
-        if self.x < 0:
-            return "r"  # Hit left side so right scores
-        elif self.x + self.width > WIDTH:
-            return "l"  # Hit right side so left scores
-
-        if self.y < 0:
-            self.y = -self.y
-            self.y_vol = -self.y_vol
-        elif self.y + self.height > HEIGHT:
-            self.y = 2 * HEIGHT - self.y - 2 * self.height
-            self.y_vol = -self.y_vol
-
-    def check_collision(self, paddles):
-        """Check if the ball is hitting a paddle and react accordingly."""
-        for paddle in paddles:
-            if not is_overlap(self, paddle):
-                continue
-
-            self.spin_ball(paddle)
-
-            self.x_vol = -self.x_vol
-
-            ball_center = self.x + self.width / 2
-            paddle_center = paddle.x + paddle.width / 2
-
-            if ball_center > paddle_center:
-                self.x = paddle.x + paddle.width
-            else:
-                self.x = paddle.x - self.width
-            return True
-        return False
-
-    def spin_ball(self, paddle):
-        """Adds or substracts y velocity based on where the ball hit the paddle."""
-
-        paddle_centre = PADDLE_HEIGHT / 2
-        ball_centre = self.y + self.height / 2
-
-        hit_position = ball_centre - paddle.y
-        hit_position_normalised = (hit_position - paddle_centre) / paddle_centre
-        spin = hit_position_normalised * SPIN
-
-        self.y_vol += spin
-
-    def display(self):
-        """Display the ball."""
-        pyxel.rect(
-            x1=self.x,
-            y1=self.y,
-            x2=self.x + self.width - 1,
-            y2=self.y + self.height - 1,
-            col=self.colour,
-        )
 
 
 ###################
@@ -212,6 +94,7 @@ class Pong:
             height=PADDLE_HEIGHT,
             control_up=pyxel.KEY_W,
             control_down=pyxel.KEY_S,
+            dimensions=DIMENSIONS,
         )
 
         self.r_paddle = Paddle(
@@ -224,6 +107,7 @@ class Pong:
             height=PADDLE_HEIGHT,
             control_up=pyxel.KEY_UP,
             control_down=pyxel.KEY_DOWN,
+            dimensions=DIMENSIONS,
         )
 
         pickup_types = {
@@ -247,6 +131,7 @@ class Pong:
             width=BALL_SIDE,
             height=BALL_SIDE,
             initial_velocity=BALL_INITIAL_VELOCITY,
+            dimensions=DIMENSIONS,
         )
 
         self.sparkler = ParticleEmitter(self.ball)
