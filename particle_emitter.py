@@ -7,10 +7,11 @@ class ParticleEmitter:
     def __init__(self, ball):
         self.ball = ball
         self.particles = []
+        self.status = 0
 
     def sparkle(self):
         """Create the sparkles."""
-        if pyxel.frame_count % 2 == 0:
+        if (pyxel.frame_count % 2 == 0) and self.status:
             self.particles.append(
                 {
                     "zero_frame": pyxel.frame_count,
@@ -27,3 +28,12 @@ class ParticleEmitter:
                 del self.particles[idx]
             else:
                 pyxel.pix(particle["x"], particle["y"], particle["color"])
+
+
+    def turn_on(self):
+        """Turn the sparkles on."""
+        self.status += 1
+
+    def turn_off(self):
+        """Turn the sparkles off."""
+        self.status -= 1

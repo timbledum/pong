@@ -9,7 +9,6 @@ PADDLE_MOVE_SPEED = 1
 SPIN = 0.4
 
 
-
 class Paddle:
     """Class for the paddles.
 
@@ -59,14 +58,15 @@ class Ball:
     def __init__(
         self, coordinates, colour, width, height, initial_velocity, dimensions
     ):
-        """Set up initial variables."""
-        self.x = coordinates[0]
-        self.y = coordinates[1]
-        self.x_vol = initial_velocity * random_direction()
-        self.y_vol = initial_velocity * random_direction()
-        self.colour = colour
-        self.width = width
-        self.height = height
+        """Store initial variables."""
+        self.initial_variables = dict(
+            coordinates=coordinates,
+            colour=colour,
+            width=width,
+            height=height,
+            initial_velocity=initial_velocity,
+        )
+        self.reset()
         self.dimensions = dimensions
 
     def update(self):
@@ -128,3 +128,12 @@ class Ball:
             col=self.colour,
         )
 
+    def reset(self):
+        """Reset to the middle of the board."""
+        self.x = self.initial_variables["coordinates"][0]
+        self.y = self.initial_variables["coordinates"][1]
+        self.x_vol = self.initial_variables["initial_velocity"] * random_direction()
+        self.y_vol = self.initial_variables["initial_velocity"] * random_direction()
+        self.colour = self.initial_variables["colour"]
+        self.width = self.initial_variables["width"]
+        self.height = self.initial_variables["height"]

@@ -73,7 +73,6 @@ class Pong:
 
         pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=50)
         self.music = Music()
-        self.sparkler_display = False
         self.reset_game()
         pyxel.run(self.update, self.draw)
 
@@ -84,8 +83,6 @@ class Pong:
         self.r_score = 0
         self.finish = False
         self.music.start_music()
-
-        self.reset_after_score()
 
         self.l_paddle = Paddle(
             coordinates=(PADDLE_SIDE, (HEIGHT - PADDLE_HEIGHT) // 2),
@@ -110,21 +107,6 @@ class Pong:
             dimensions=DIMENSIONS,
         )
 
-        pickup_types = {
-            "sparkle": PickupType(14),
-            "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
-        }
-        self.expand_stack = []
-        pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
-        self.pickups = Pickups(
-            pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
-        )
-
-    def reset_after_score(self):
-        """Reset paddles and ball."""
-        self.start = pyxel.frame_count + 50
-        self.speed_up = self.start + SPEED_PERIOD
-
         self.ball = Ball(
             coordinates=(WIDTH // 2, HEIGHT // 2),
             colour=COL_BALL,
@@ -135,6 +117,25 @@ class Pong:
         )
 
         self.sparkler = ParticleEmitter(self.ball)
+
+        pickup_types = {
+            "sparkle": PickupType(14, self.sparkler.turn_on, self.sparkler.turn_off),
+            "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
+        }
+        self.expand_stack = []
+        pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
+        self.pickups = Pickups(
+            pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
+        )
+
+        self.reset_after_score()
+
+    def reset_after_score(self):
+        """Reset paddles and ball."""
+        self.start = pyxel.frame_count + 50
+        self.speed_up = self.start + SPEED_PERIOD
+        self.ball.reset()
+
 
     ##############
     # Game logic #
@@ -162,9 +163,6 @@ class Pong:
 
         if pyxel.btnp(pyxel.KEY_R):
             self.reset_game()
-
-        if pyxel.btnp(pyxel.KEY_SPACE):
-            self.sparkler_display = not self.sparkler_display
 
     def expand_paddle(self):
         if self.ball.x_vol > 0:
@@ -220,8 +218,7 @@ class Pong:
             self.draw_end_screen()
         else:
             pyxel.cls(COL_BACKGROUND)
-            if self.pickups.is_condition_active("sparkle"):
-                self.sparkler.display()
+            self.sparkler.display()
             self.l_paddle.display()
             self.r_paddle.display()
             self.pickups.display()
