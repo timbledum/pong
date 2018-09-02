@@ -6,15 +6,16 @@ import pyxel
 from utilities import is_overlap
 
 Pickup = namedtuple("Point", "x y width height pickup_type")
+PickupType = namedtuple("PickupType", "colour enter exit", defaults=[None, None])
 
-PICKUP_TYPES = {"sparkle": 14, "expand": 12}
+PICKUP_TYPES = {"sparkle": PickupType(14), "expand": PickupType(12)}
 PICKUP_INTERVAL = (500, 900)
 PICKUP_WIDTH = 3
 PICKUP_LENGTH = 400
 
 
 class Pickups:
-    def __init__(self, left, right, top, bottom):
+    def __init__(self, pickup_types, left, right, top, bottom):
         self.left = left
         self.right = right
         self.top = top
@@ -22,6 +23,7 @@ class Pickups:
 
         self.next_pickup = pyxel.frame_count + randint(*PICKUP_INTERVAL)
 
+        self.pickup_types = pickup_types
         self.pickups = []
         self.active_conditions = {}
 
@@ -34,10 +36,14 @@ class Pickups:
             if pyxel.frame_count > end_frame:
                 del self.active_conditions[condition]
 
+                exit_function = self.pickup_types[condition].exit
+                if exit_function:
+                    exit_function()
+
     def create_pickup(self):
         x = randint(self.left, self.right - PICKUP_WIDTH)
         y = randint(self.top, self.bottom - PICKUP_WIDTH)
-        pickup_type = choice(list(PICKUP_TYPES.keys()))
+        pickup_type = choice(list(self.pickup_types.keys()))
         pickup = Pickup(
             x=x, y=y, width=PICKUP_WIDTH, height=PICKUP_WIDTH, pickup_type=pickup_type
         )
@@ -50,7 +56,10 @@ class Pickups:
                 self.active_conditions[pickup.pickup_type] = (
                     pyxel.frame_count + PICKUP_LENGTH
                 )
-                return pickup.pickup_type
+    
+                enter_function = self.pickup_types[pickup.pickup_type].enter
+                if enter_function:
+                    enter_function()
 
 
     def display(self):
@@ -60,5 +69,5 @@ class Pickups:
                 y1=pickup.y,
                 x2=pickup.x + pickup.width - 1,
                 y2=pickup.y + pickup.height - 1,
-                col=PICKUP_TYPES[pickup.pickup_type],
+                col=self.pickup_types[pickup.pickup_type].colour,
             )

@@ -23,7 +23,7 @@ Created by Marcus Croucher in 2018.
 
 import pyxel
 from particle_emitter import ParticleEmitter
-from pickups import Pickups
+from pickups import Pickups, PickupType
 from utilities import is_overlap, sign, random_direction
 
 #############
@@ -226,8 +226,14 @@ class Pong:
             control_down=pyxel.KEY_DOWN,
         )
 
-        special_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
-        self.pickups = Pickups(special_side_buffer, WIDTH - special_side_buffer, 0, HEIGHT)
+        pickup_types = {
+            "sparkle": PickupType(14),
+            "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
+        }
+        pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
+        self.pickups = Pickups(
+            pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
+        )
 
     def reset_after_score(self):
         """Reset paddles and ball."""
@@ -261,12 +267,8 @@ class Pong:
             if self.ball.check_collision([self.l_paddle, self.r_paddle]):
                 self.music.sfx_hit()
             self.pickups.check_pickup()
-            pickup_collision = self.pickups.check_collision(self.ball)
-            if pickup_collision == "expand":
-                self.expand_paddle()
-            if "expand" not in self.pickups.active_conditions:
-                self.l_paddle.height = self.r_paddle.height = PADDLE_HEIGHT
-            
+            self.pickups.check_collision(self.ball)
+
             self.sparkler.sparkle()
 
         if pyxel.btn(pyxel.KEY_Q):
@@ -277,14 +279,18 @@ class Pong:
 
         if pyxel.btnp(pyxel.KEY_SPACE):
             self.sparkler_display = not self.sparkler_display
-        
+
     def expand_paddle(self):
         if self.ball.x_vol > 0:
             paddle = self.l_paddle
         else:
             paddle = self.r_paddle
-        
+
         paddle.height = PADDLE_HEIGHT_EXPANDED
+
+    def contract_paddle(self):
+        self.l_paddle.height = PADDLE_HEIGHT
+        self.r_paddle.height = PADDLE_HEIGHT
 
     def check_speed(self):
         """Adds velocity to the ball periodically."""
