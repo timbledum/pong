@@ -144,9 +144,11 @@ class Pong:
     def update(self):
         """Update logic of game. Updates the paddles, ball, and checks for scoring/win condition."""
 
+        self.l_paddle.update()
+        self.r_paddle.update()
+        self.sparkler.sparkle()
+
         if pyxel.frame_count > self.start and not self.finish:
-            self.l_paddle.update()
-            self.r_paddle.update()
             outcome = self.ball.update()
             if outcome:
                 self.score(outcome)
@@ -156,7 +158,6 @@ class Pong:
             self.pickups.check_pickup()
             self.pickups.check_collision(self.ball)
 
-            self.sparkler.sparkle()
 
         if pyxel.btn(pyxel.KEY_Q):
             pyxel.quit()
