@@ -7,17 +7,6 @@ Controls are the arrow keys ↑ & ↓ or w & s
 Q: Quit the game
 R: Restart the game
 
-Todo:
-- [x] Fix collision detection
-- [x] Replace namedtuple with classes
-- [ ] Replace music
-- [x] Change colour palette
-- [x] Make smoother
-- [x] Add scoring
-- [x] Add scores
-- [x] Add finish screen
-- [x] Add different rebounds
-
 Created by Marcus Croucher in 2018.
 """
 
@@ -169,34 +158,6 @@ class Pong:
         if pyxel.btnp(pyxel.KEY_R):
             self.reset_game()
 
-    def expand_paddle(self):
-        if self.ball.x_vol > 0:
-            paddle = self.l_paddle
-        else:
-            paddle = self.r_paddle
-
-        paddle.height = PADDLE_HEIGHT_EXPANDED
-        self.expand_stack.append(paddle)
-
-    def contract_paddle(self):
-        paddle = self.expand_stack.pop(0)
-        if paddle not in self.expand_stack:
-            paddle.height = PADDLE_HEIGHT
-
-    def slow_paddle(self):
-        if self.ball.x_vol > 0:
-            paddle = self.r_paddle
-        else:
-            paddle = self.l_paddle
-
-        paddle.move_speed = PADDLE_MOVE_SPEED_SLOW
-        self.speed_stack.append(paddle)
-
-    def speed_paddle(self):
-        paddle = self.speed_stack.pop(0)
-        if paddle not in self.speed_stack:
-            paddle.move_speed = PADDLE_MOVE_SPEED
-
     def check_speed(self):
         """Adds velocity to the ball periodically."""
 
@@ -225,6 +186,46 @@ class Pong:
         self.finish = True
         self.music.stop_music()
         self.music.sfx_finish()
+
+    ######################
+    # Pickup controllers #
+    ######################
+
+    def expand_paddle(self):
+        """Expand the pandle temporarily."""
+
+        if self.ball.x_vol > 0:
+            paddle = self.l_paddle
+        else:
+            paddle = self.r_paddle
+
+        paddle.height = PADDLE_HEIGHT_EXPANDED
+        self.expand_stack.append(paddle)
+
+    def contract_paddle(self):
+        """Revert paddle side to normal."""
+
+        paddle = self.expand_stack.pop(0)
+        if paddle not in self.expand_stack:
+            paddle.height = PADDLE_HEIGHT
+
+    def slow_paddle(self):
+        """Slow the pandle temporarily."""
+
+        if self.ball.x_vol > 0:
+            paddle = self.l_paddle
+        else:
+            paddle = self.r_paddle
+
+        paddle.move_speed = PADDLE_MOVE_SPEED_SLOW
+        self.speed_stack.append(paddle)
+
+    def speed_paddle(self):
+        """Speed the paddle back up to normal speed."""
+
+        paddle = self.speed_stack.pop(0)
+        if paddle not in self.speed_stack:
+            paddle.move_speed = PADDLE_MOVE_SPEED
 
     ##############
     # Draw logic #

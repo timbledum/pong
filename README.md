@@ -17,7 +17,7 @@ One player wins after **five** scores.
 3. The paddles impart spin on the ball
 4. There are sound effects
 5. Score is kept
-6. Powerups (expand board, and sprinkles)
+6. Powerups (expand paddle, slow paddle, and sparkles)
 
 ## Installation ##
 
