@@ -22,6 +22,7 @@ from utilities import sign
 
 COL_BACKGROUND = 5
 COL_PADDLE = 6
+COL_PADDLE_SLOW = 8
 COL_BALL = 9
 COL_SCORE = 13
 COL_FINISH = 13
@@ -218,6 +219,7 @@ class Pong:
             paddle = self.r_paddle
 
         paddle.move_speed = PADDLE_MOVE_SPEED_SLOW
+        paddle.colour = COL_PADDLE_SLOW
         self.speed_stack.append(paddle)
 
     def speed_paddle(self):
@@ -226,6 +228,7 @@ class Pong:
         paddle = self.speed_stack.pop(0)
         if paddle not in self.speed_stack:
             paddle.move_speed = PADDLE_MOVE_SPEED
+            paddle.colour = COL_PADDLE
 
     ##############
     # Draw logic #

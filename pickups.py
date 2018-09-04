@@ -21,7 +21,7 @@ from utilities import is_overlap
 
 PICKUP_INTERVAL = (500, 900)
 PICKUP_WIDTH = 3
-PICKUP_LENGTH = 400
+PICKUP_LENGTH = 500
 
 Pickup = namedtuple("Point", "x y width height pickup_type")
 
