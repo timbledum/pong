@@ -14,6 +14,7 @@ import pyxel
 from particle_emitter import ParticleEmitter
 from objects import Paddle, Ball
 from pickups import Pickups, PickupType
+from music import Music
 from utilities import sign
 
 #############
@@ -283,54 +284,6 @@ class Pong:
 
         text_width = len(text) * char_width
         return (page_width - text_width) // 2
-
-
-###########################
-# Music and sound effects #
-###########################
-
-
-class Music:
-    def __init__(self):
-        """Define sound and music."""
-
-        # Sound effects
-        pyxel.sound(0).set(  # Score
-            note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
-        )
-
-        pyxel.sound(1).set(  # Finish
-            note="f3 b2 f2 b1  f1 f1 f1 f1",
-            tone="p",
-            volume=("4" * 4 + "4321"),
-            effect=("n" * 7 + "f"),
-            speed=9,
-        )
-
-        pyxel.sound(2).set(  # Hit
-            note="a3", tone="s", volume="4", effect=("n"), speed=7
-        )
-
-    def sfx_score(self):
-        """Play scoring sound."""
-        pyxel.play(ch=0, snd=0)
-
-    def sfx_finish(self):
-        """Play finish sound."""
-        pyxel.play(ch=0, snd=1)
-
-    def sfx_hit(self):
-        """Play sound for when ball hits paddle."""
-        pyxel.play(ch=0, snd=2)
-
-    def start_music(self):
-        """Start all music tracks (channels 1 - 3)."""
-        pass  # To be implemented
-
-    def stop_music(self):
-        """Stop all music tracks (channels 1 - 3)."""
-        for ch in range(1, 4):
-            pyxel.stop(ch=ch)
 
 
 if __name__ == "__main__":
