@@ -14,12 +14,17 @@ class Music:
     def __init__(self):
         """Define sound and music."""
 
-        # Sound effects
-        pyxel.sound(0).set(  # Score
+        #################
+        # Sound effects #
+        #################
+
+        # Score
+        pyxel.sound(0).set(
             note="c3e3g3c4c4", tone="s", volume="4", effect=("n" * 4 + "f"), speed=7
         )
 
-        pyxel.sound(1).set(  # Finish
+        # Finish
+        pyxel.sound(1).set(
             note="f3 b2 f2 b1  f1 f1 f1 f1",
             tone="p",
             volume=("4" * 4 + "4321"),
@@ -27,8 +32,38 @@ class Music:
             speed=9,
         )
 
-        pyxel.sound(2).set(  # Hit
+        # Hit
+        pyxel.sound(2).set(
             note="a3", tone="s", volume="4", effect=("n"), speed=7
+        )
+
+        #########
+        # Music #
+        #########
+
+        speed = 30
+
+        # Drums
+        drum_sound = (
+            "b_s_bbs_"
+            "b_s_bbsH"
+            "b_s_bbs_"
+            "b_s_bbsb"
+        )
+
+        pyxel.sound(10).set(**self.convert_drums(drum_sound, speed=speed))
+
+        # Harmony
+        harmony = (
+            "c2 c2 e2 g2 r c2 e2 g2"
+        )
+
+        pyxel.sound(11).set(
+            note=harmony,
+            tone="p",
+            volume=("4"),
+            effect=("f"),
+            speed=speed,
         )
 
     def sfx_score(self):
@@ -49,12 +84,59 @@ class Music:
 
     def start_music(self):
         """Start all music tracks (channels 1 - 3)."""
-        pass  # To be implemented
+        pyxel.play(ch=1, snd=10, loop=True)
+        pyxel.play(ch=2, snd=11, loop=True)
 
     def stop_music(self):
         """Stop all music tracks (channels 1 - 3)."""
-        for ch in range(1, 4):
+        for ch in range(10, 14):
             pyxel.stop(ch=ch)
+
+
+    @staticmethod
+    def octave_shift(snd, octaves=1):
+        """Shift the notes of the given sound by the given amount of octaves."""
+
+        note_shift = 12 * octaves
+        pyxel.sound(snd).note = [i + note_shift if i != -1 else -1 for i in pyxel.sound(snd).note]
+
+    @staticmethod
+    def convert_drums(drum_string, speed=20):
+        """Convert drum string to pyxel arguments to set a sound.
+        
+        Defines drum noises, and converts a simplified drum string into a full
+        set of note, volume, tone, etc., which can be passed using the ** syntax
+        to the pyxel.sound.set method.
+
+        >>> convert_drums("b_s_ bbs_")
+        {"note": "f0ra4rf0f0a4r",
+         "tone": "n",
+         "volume": "60206620",
+         "effect": "f",
+         "speed": 20}
+
+        """
+
+        noises = {}
+
+        # Define drums
+
+        noises["b"] = {"note": "f0", "tone": "n", "volume": "6", "effect": "f"}
+        noises["s"] = {"note": "b3", "tone": "n", "volume": "2", "effect": "f"}
+        noises["H"] = {"note": "b4", "tone": "n", "volume": "1", "effect": "n"}
+        noises["h"] = {"note": "b4", "tone": "n", "volume": "1", "effect": "f"}
+        noises["_"] = {"note": "r", "tone": "n", "volume": "0", "effect": "f"}
+
+        # Construct output dict
+
+        output = {"note": "", "tone": "", "volume": "", "effect": ""}
+
+        for noise in drum_string.replace(" ", ""):
+            for key in output:
+                output[key] += noises[noise][key]
+
+        output["speed"] = speed
+        return output
 
 
 if __name__ == "__main__":
