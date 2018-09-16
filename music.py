@@ -6,8 +6,6 @@
 
 """
 
-from itertools import accumulate
-from random import randint
 import pyxel
 
 
@@ -36,10 +34,10 @@ class Music:
         )
 
         # Hit
-        pyxel.sound(2).set(note="a3", tone="s", volume="4", effect=("n"), speed=7)
+        pyxel.sound(2).set(note="c3", tone="p", volume="4", effect=("n"), speed=7)
 
-        # Pickup (NB: Note logic in play method, based on random)
-        pyxel.sound(3).set(note="", tone="s", volume="4", effect="n", speed=6)
+        # Pickup
+        pyxel.sound(3).set(note="a2", tone="s", volume="4", effect="f", speed=40)
 
         #########
         # Music #
@@ -77,10 +75,6 @@ class Music:
         pyxel.play(ch=0, snd=2)
 
     def sfx_pickup(self):
-        """Play sound for when ball hits a pickup."""
-        rand_ints = [randint(1, 10) for _ in range(10)]
-        rand_notes = list(accumulate(rand_ints))
-        pyxel.sound(3).note = rand_notes
         pyxel.play(ch=0, snd=3)
 
     def start_music(self):
