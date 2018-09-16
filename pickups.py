@@ -33,12 +33,14 @@ class Pickups:
     """A class for keeping track of displaying pickups, then tracking
     the condition of the pickups when they take effect."""
 
-    def __init__(self, pickup_types, left, right, top, bottom):
+    def __init__(self, pickup_types, music, left, right, top, bottom):
         """Initiate with given types, and dimensions of the board where pickups are allowed."""
         self.left = left
         self.right = right
         self.top = top
         self.bottom = bottom
+
+        self.music = music
 
         self.next_pickup = pyxel.frame_count + randint(*PICKUP_INTERVAL)
 
@@ -83,6 +85,7 @@ class Pickups:
 
         for i, pickup in enumerate(self.pickups.copy()):
             if is_overlap(pickup, ball):
+                self.music.sfx_pickup()
                 del self.pickups[i]
                 self.active_conditions.append(
                     (pickup.pickup_type, pyxel.frame_count + PICKUP_LENGTH)

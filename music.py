@@ -6,7 +6,10 @@
 
 """
 
+from itertools import accumulate
+from random import randint
 import pyxel
+
 
 class Music:
     """A class to contain music and sound effects."""
@@ -33,9 +36,10 @@ class Music:
         )
 
         # Hit
-        pyxel.sound(2).set(
-            note="a3", tone="s", volume="4", effect=("n"), speed=7
-        )
+        pyxel.sound(2).set(note="a3", tone="s", volume="4", effect=("n"), speed=7)
+
+        # Pickup (NB: Note logic in play method, based on random)
+        pyxel.sound(3).set(note="", tone="s", volume="4", effect="n", speed=6)
 
         #########
         # Music #
@@ -44,26 +48,20 @@ class Music:
         speed = 30
 
         # Drums
-        drum_sound = (
-            "b_s_bbs_"
-            "b_s_bbsH"
-            "b_s_bbs_"
-            "b_s_bbsb"
-        )
+        drum_sound = "b_s_bbs_" "b_s_bbsH" "b_s_bbs_" "b_s_bbsb"
 
         pyxel.sound(10).set(**self.convert_drums(drum_sound, speed=speed))
 
         # Harmony
         harmony = (
-            "c2 c2 e2 g2 r c2 e2 g2"
+            "c1 c1 e1 g1 c0 c1 e1 g1"
+            "c1 c1 e1 g1 c0 c1 e1 g1"
+            "a0 a0 c1 e1 r  a0 c1 e1"
+            "e1 e1 g1 b1 r  e1 g1 b1"
         )
 
         pyxel.sound(11).set(
-            note=harmony,
-            tone="p",
-            volume=("4"),
-            effect=("f"),
-            speed=speed,
+            note=harmony, tone="t", volume=("4"), effect=("f"), speed=speed
         )
 
     def sfx_score(self):
@@ -80,6 +78,9 @@ class Music:
 
     def sfx_pickup(self):
         """Play sound for when ball hits a pickup."""
+        rand_ints = [randint(1, 10) for _ in range(10)]
+        rand_notes = list(accumulate(rand_ints))
+        pyxel.sound(3).note = rand_notes
         pyxel.play(ch=0, snd=3)
 
     def start_music(self):
@@ -92,13 +93,14 @@ class Music:
         for ch in range(10, 14):
             pyxel.stop(ch=ch)
 
-
     @staticmethod
     def octave_shift(snd, octaves=1):
         """Shift the notes of the given sound by the given amount of octaves."""
 
         note_shift = 12 * octaves
-        pyxel.sound(snd).note = [i + note_shift if i != -1 else -1 for i in pyxel.sound(snd).note]
+        pyxel.sound(snd).note = [
+            i + note_shift if i != -1 else -1 for i in pyxel.sound(snd).note
+        ]
 
     @staticmethod
     def convert_drums(drum_string, speed=20):
@@ -150,6 +152,8 @@ if __name__ == "__main__":
             music.sfx_score()
         if pyxel.btnp(pyxel.KEY_3):
             music.sfx_finish()
+        if pyxel.btnp(pyxel.KEY_4):
+            music.sfx_pickup()
         if pyxel.btnp(pyxel.KEY_S):
             music.start_music()
         if pyxel.btnp(pyxel.KEY_F):

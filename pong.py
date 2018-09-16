@@ -122,7 +122,7 @@ class Pong:
         self.speed_stack = []
         pickup_side_buffer = PADDLE_WIDTH + PADDLE_SIDE + 2
         self.pickups = Pickups(
-            pickup_types, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
+            pickup_types, self.music, pickup_side_buffer, WIDTH - pickup_side_buffer, 0, HEIGHT
         )
 
         self.reset_after_score()
