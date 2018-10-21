@@ -202,6 +202,7 @@ class Pong:
             paddle = self.r_paddle
 
         paddle.height = PADDLE_HEIGHT_EXPANDED
+        paddle.y -= (PADDLE_HEIGHT_EXPANDED - PADDLE_HEIGHT) // 2
         self.expand_stack.append(paddle)
 
     def contract_paddle(self):
@@ -210,6 +211,7 @@ class Pong:
         paddle = self.expand_stack.pop(0)
         if paddle not in self.expand_stack:
             paddle.height = PADDLE_HEIGHT
+            paddle.y += (PADDLE_HEIGHT_EXPANDED - PADDLE_HEIGHT) // 2
 
     def slow_paddle(self):
         """Slow the pandle temporarily."""
