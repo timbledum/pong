@@ -41,7 +41,7 @@ PADDLE_MOVE_SPEED = 1
 PADDLE_MOVE_SPEED_SLOW = 0.5
 
 
-BALL_INITIAL_VELOCITY = 0.5
+BALL_INITIAL_VELOCITY = 0.4
 BALL_SIDE = 2
 
 WIN_CONDITION = 5
@@ -50,7 +50,7 @@ TEXT_FINISH = ["The winner is:", "", "(Q)UIT", "(R)ESTART"]
 HEIGHT_FINISH = 6
 
 SPEED_PERIOD = 150
-SPEED_AMOUNT = 0.1
+SPEED_AMOUNT = 0.07
 
 
 ###################
@@ -64,7 +64,7 @@ class Pong:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=50)
+        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=60)
         self.music = Music()
         self.reset_game()
         pyxel.run(self.update, self.draw)

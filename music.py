@@ -84,8 +84,23 @@ class Music:
 
     def stop_music(self):
         """Stop all music tracks (channels 1 - 3)."""
-        for ch in range(10, 14):
+        for ch in range(10, 12):
             pyxel.stop(ch=ch)
+
+    @staticmethod
+    def standardise_length(sounds):
+        """For a list of sound numbers, loop the shorter ones to fit the longer one."""
+        max_length = max(len(pyxel.sound(snd).note) for snd in sounds)
+        for snd in sounds:
+            multiple = len(pyxel.sound(snd).note) / max_length
+            if int(multiple) != multiple:
+                raise ValueError("One of the sounds does not loop within the longest sound.")
+        
+        for snd in sounds:
+            multiple = len(pyxel.sound(snd).note) / max_length
+            pyxel.sound(snd).note = pyxel.sound(snd).note * int(multiple)
+            
+
 
     @staticmethod
     def octave_shift(snd, octaves=1):
