@@ -19,7 +19,8 @@ import pyxel
 from utilities import is_overlap
 
 
-PICKUP_INTERVAL = (500, 900)
+PICKUP_INTERVAL = (300, 900)
+# PICKUP_INTERVAL = (100, 150)  # Super pickup mode
 PICKUP_WIDTH = 3
 PICKUP_LENGTH = 500
 
@@ -94,6 +95,7 @@ class Pickups:
                 enter_function = self.pickup_types[pickup.pickup_type].enter
                 if enter_function:
                     enter_function()
+                break
 
     def display(self):
         """Display all pickups."""

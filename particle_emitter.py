@@ -12,11 +12,14 @@ class ParticleEmitter:
     def sparkle(self):
         """Create the sparkles."""
         if (pyxel.frame_count % 2 == 0) and self.status:
+            center_x = self.ball.x + self.ball.width // 2
+            center_y = self.ball.y + self.ball.height // 2
+
             self.particles.append(
                 {
                     "zero_frame": pyxel.frame_count,
-                    "x": randint(int(self.ball.x) - 4, int(self.ball.x) + 4),
-                    "y": randint(int(self.ball.y) - 4, int(self.ball.y) + 4),
+                    "x": randint(int(center_x) - 4, int(center_x) + 4),
+                    "y": randint(int(center_y) - 4, int(center_y) + 4),
                     "color": randint(8, 14),
                 }
             )

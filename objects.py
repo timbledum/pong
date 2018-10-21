@@ -8,6 +8,7 @@ from utilities import is_overlap, random_direction
 SPIN = 0.4
 BOUNCE = 0.03
 BOUNCE_FRICTION = 0.1
+GIANT_SIDE_CHANGE = 5
 
 
 class Paddle:
@@ -71,14 +72,17 @@ class Ball:
         """Store initial variables."""
         self.initial_variables = dict(
             coordinates=coordinates,
-            colour=colour,
-            width=width,
-            height=height,
             initial_velocity=initial_velocity,
         )
+
+        self.colour = colour
+        self.width = width
+        self.height = height
+
         self.reset()
         self.dimensions = dimensions
         self.bounce_status = 0
+        self.size_status = 0
 
     def update(self):
         """Update position of ball and check if hitting side of board."""
@@ -152,9 +156,6 @@ class Ball:
         self.y = self.initial_variables["coordinates"][1]
         self.x_vol = self.initial_variables["initial_velocity"] * random_direction()
         self.y_vol = self.initial_variables["initial_velocity"] * random_direction()
-        self.colour = self.initial_variables["colour"]
-        self.width = self.initial_variables["width"]
-        self.height = self.initial_variables["height"]
 
     def bounce_on(self):
         """Turn the bounce on."""
@@ -163,3 +164,17 @@ class Ball:
     def bounce_off(self):
         """Turn the bounce off."""
         self.bounce_status -= 1
+
+    def giant_on(self):
+        """Enlarge the ball."""
+        self.height += GIANT_SIDE_CHANGE
+        self.width  += GIANT_SIDE_CHANGE
+        self.x -= GIANT_SIDE_CHANGE // 2
+        self.y -= GIANT_SIDE_CHANGE // 2
+
+    def giant_off(self):
+        """Shrink the ball."""
+        self.height -= GIANT_SIDE_CHANGE
+        self.width  -= GIANT_SIDE_CHANGE
+        self.x += GIANT_SIDE_CHANGE // 2
+        self.y += GIANT_SIDE_CHANGE // 2
