@@ -117,6 +117,7 @@ class Pong:
             "sparkle": PickupType(14, self.sparkler.turn_on, self.sparkler.turn_off),
             "expand": PickupType(12, self.expand_paddle, self.contract_paddle),
             "slow": PickupType(8, self.slow_paddle, self.speed_paddle),
+            "bounce": PickupType(11, self.ball.bounce_on, self.ball.bounce_off),
         }
         self.expand_stack = []
         self.speed_stack = []

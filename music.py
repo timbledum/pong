@@ -84,7 +84,7 @@ class Music:
 
     def stop_music(self):
         """Stop all music tracks (channels 1 - 3)."""
-        for ch in range(10, 12):
+        for ch in range(1, 4):
             pyxel.stop(ch=ch)
 
     @staticmethod

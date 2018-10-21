@@ -6,6 +6,8 @@ import pyxel
 from utilities import is_overlap, random_direction
 
 SPIN = 0.4
+BOUNCE = 0.03
+BOUNCE_FRICTION = 0.1
 
 
 class Paddle:
@@ -76,11 +78,15 @@ class Ball:
         )
         self.reset()
         self.dimensions = dimensions
+        self.bounce_status = 0
 
     def update(self):
         """Update position of ball and check if hitting side of board."""
         self.x += self.x_vol
         self.y += self.y_vol
+
+        if self.bounce_status:
+            self.y_vol += BOUNCE
 
         if self.x < 0:
             return "r"  # Hit left side so right scores
@@ -92,7 +98,11 @@ class Ball:
             self.y_vol = -self.y_vol
         elif self.y + self.height > self.dimensions[1]:
             self.y = 2 * self.dimensions[1] - self.y - 2 * self.height
-            self.y_vol = -self.y_vol
+
+            if self.bounce_status:
+                self.y_vol = -self.y_vol + BOUNCE_FRICTION
+            else:
+                self.y_vol = -self.y_vol
 
     def check_collision(self, paddles):
         """Check if the ball is hitting a paddle and react accordingly."""
@@ -145,3 +155,11 @@ class Ball:
         self.colour = self.initial_variables["colour"]
         self.width = self.initial_variables["width"]
         self.height = self.initial_variables["height"]
+
+    def bounce_on(self):
+        """Turn the bounce on."""
+        self.bounce_status += 1
+
+    def bounce_off(self):
+        """Turn the bounce off."""
+        self.bounce_status -= 1
