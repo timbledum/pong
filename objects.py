@@ -53,10 +53,10 @@ class Paddle:
     def display(self):
         """Display the paddle as a rect."""
         pyxel.rect(
-            x1=self.x,
-            y1=self.y,
-            x2=self.x + self.width - 1,
-            y2=self.y + self.height - 1,
+            x=self.x,
+            y=self.y,
+            w=self.width,
+            h=self.height,
             col=self.colour,
         )
 
@@ -143,10 +143,10 @@ class Ball:
     def display(self):
         """Display the ball."""
         pyxel.rect(
-            x1=self.x,
-            y1=self.y,
-            x2=self.x + self.width - 1,
-            y2=self.y + self.height - 1,
+            x=self.x,
+            y=self.y,
+            w=self.width,
+            h=self.height,
             col=self.colour,
         )
 

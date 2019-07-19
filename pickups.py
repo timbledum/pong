@@ -102,9 +102,9 @@ class Pickups:
 
         for pickup in self.pickups:
             pyxel.rect(
-                x1=pickup.x,
-                y1=pickup.y,
-                x2=pickup.x + pickup.width - 1,
-                y2=pickup.y + pickup.height - 1,
+                x=pickup.x,
+                y=pickup.y,
+                w=pickup.width,
+                h=pickup.height,
                 col=self.pickup_types[pickup.pickup_type].colour,
             )
