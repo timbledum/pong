@@ -260,7 +260,7 @@ class Pong:
         r_score = "{:01}".format(self.r_score)
 
         buffer = PADDLE_SIDE + PADDLE_WIDTH + 2
-        r_x_position = WIDTH - pyxel.constants.FONT_WIDTH - buffer
+        r_x_position = WIDTH - pyxel.FONT_WIDTH - buffer
 
         pyxel.text(x=buffer, y=2, s=l_score, col=COL_SCORE)
         pyxel.text(x=r_x_position, y=2, s=r_score, col=COL_SCORE)
@@ -278,12 +278,12 @@ class Pong:
             winner = "The RIGHT player!"
         display_text.insert(1, winner)
         for i, text in enumerate(display_text):
-            y_offset = (pyxel.constants.FONT_HEIGHT + 2) * i
+            y_offset = (pyxel.FONT_HEIGHT + 2) * i
             text_x = self.center_text(text, WIDTH)
             pyxel.text(text_x, HEIGHT_FINISH + y_offset, text, COL_FINISH_TEXT)
 
     @staticmethod
-    def center_text(text, page_width, char_width=pyxel.constants.FONT_WIDTH):
+    def center_text(text, page_width, char_width=pyxel.FONT_WIDTH):
         """Helper function for calcuating the start x value for centered text."""
 
         text_width = len(text) * char_width
