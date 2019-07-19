@@ -8,6 +8,8 @@ Controls are the arrow keys **↑** & **↓** or **w** & **s**
 
 One player wins after **five** scores.
 
+Requires pyxel version >= 1.1.6
+
 ![Screenshot!](https://github.com/timbledum/pong/blob/master/pong_screenshot.png)
 
 ## Features: ##
