@@ -66,7 +66,7 @@ class Pong:
     def __init__(self):
         """Initiate pyxel, set up initial game variables, and run."""
 
-        pyxel.init(WIDTH, HEIGHT, caption="Pong!", scale=8, fps=60)
+        pyxel.init(WIDTH, HEIGHT, title="Pong!", display_scale=8, fps=60)
         self.music = Music()
         self.reset_game()
         pyxel.run(self.update, self.draw)

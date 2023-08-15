@@ -30,7 +30,7 @@ class ParticleEmitter:
             if pyxel.frame_count - particle["zero_frame"] >= 20:
                 del self.particles[idx]
             else:
-                pyxel.pix(particle["x"], particle["y"], particle["color"])
+                pyxel.pset(particle["x"], particle["y"], particle["color"])
 
     def turn_on(self):
         """Turn the sparkles on."""
