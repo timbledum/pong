@@ -2,12 +2,14 @@
 
 This is the game of pong implemented in pyxel!
 
+Version 1.9.18
+
 Controls are the arrow keys ↑ & ↓ or w & s
 
 Q: Quit the game
 R: Restart the game
 
-Created by Marcus Croucher in 2018.
+Created by Marcus Croucher in 2018. Updated in 2023.
 """
 
 import pyxel
